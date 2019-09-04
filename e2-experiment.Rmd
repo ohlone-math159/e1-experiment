@@ -17,8 +17,8 @@ library(randomizr)
 ```
 
 ## Load Class Roster to Perform Randomization of Treatment
-```{r}
-roster <-read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSWYF1ho6YTKp7ntHl-9CV6HcgJYYqcT53MZUBBKGByhCxzJmUymJF4GWINHdAPMREUSj6IosD7E4Gc/pub?gid=0&single=true&output=csv")
+```{r message=FALSE}
+roster <-read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vShIAfdrl33WvTe9fFLHZPZH1RSQpaBFc1e_EjlbfOC_-pW3mIb0vm0ugZrlFu4B72XiYBCHYnW33DW/pub?gid=839563195&single=true&output=csv")
 ```
 
 ## Create 2 Groups (Control and Treatment)
@@ -55,24 +55,31 @@ ggplot(data = roster_ra, aes(x=group, fill=gender))+
 
 Categorical Variable #2
 ```{r}
-ggplot(data = roster_ra, aes(x=group, fill=factor(fitness_level)))+
+ggplot(data = roster_ra, aes(x=group, fill=factor(practiced)))+
   geom_bar()
 ```
 
-Categorical Variable #3
+## Practice with other categorical variables
+
+Categorical Variable #3 **amt_stress**
+```{r}
+
+```
+
+Categorical Variable #3 **fitness_level**
 ```{r}
 
 ```
 
 ## Compare the groups with respect to the numerical variables
 
-Example: Visualize height
+Example: Visualize **age** distribution for each group
 ```{r}
 ggplot(roster_ra, aes(x=age, fill=group))+
   geom_dotplot()+
   facet_wrap(~group, nrow=2)
 ```
-Example: Look at average height
+Example: Calculate average age for each group
 ```{r}
 roster_ra %>% 
   group_by(group) %>% 
@@ -92,23 +99,25 @@ Calculate averages
 
 ## Analysis of the experimental results
 
-#Load in the data from the survey by publishing Google Sheet
-```{r}
-breath <-read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRXUa2Xo3hx6WnNo0WSu1OK_5oODLIxwooSFzteeVBZGXsRh_9UxqwY0nueUGRJLrza0wJSb6M5ZLcp/pub?gid=0&single=true&output=csv")
+#Re-Read in the data 
+After study participants have edited their survey to include their time, 
+reload the Google Sheet
+```{r message=FALSE}
+breath <-read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vShIAfdrl33WvTe9fFLHZPZH1RSQpaBFc1e_EjlbfOC_-pW3mIb0vm0ugZrlFu4B72XiYBCHYnW33DW/pub?gid=839563195&single=true&output=csv")
 ```
 
 # Compare the Treatment to the Control
 Looking at differences in breathing time between control and treatment groups, using dotplot of each group
 
 ```{r}
-ggplot(data=breath, aes(x=time, fill=group))+
+ggplot(data=breath, aes(x=duration))+
   geom_dotplot()+
   facet_wrap(~group, nrow=2)
 ```
 
 Another way to see the difference is to use a boxplot summary graphic
 ```{r}
-ggplot(data=breath, aes(x=group, y=time, color=group))+
+ggplot(data=breath, aes(x=group, y=duration, color=group))+
   geom_boxplot()+
   geom_point(position="jitter")+
   coord_flip()
@@ -119,7 +128,7 @@ We can also compare averages time by looking at numerical summary broken down by
 ```{r}
 breath %>% 
   group_by(group) %>% 
-  summarize(mean=mean(time))
+  summarize(mean=mean(duration, NA.RM=TRUE))
 
 ```
 
@@ -131,24 +140,24 @@ Do we see any difference across categorical variable from control to treatment?
 
 Example: differences within **gender** across the treatment/control
 
-Numerical Summaries (median and mean)
+Numerical Summaries ( mean)
 ```{r}
 breath %>% 
   group_by(gender, group) %>% 
-  summarize(mean=mean(time))
+  summarize(mean=mean(duration))
 ```
 
 Visualize the results with a dotplot
 
 ```{r}
-ggplot(data=breath, aes( x=time, fill=practiced))+
+ggplot(data=breath, aes( x=duration, fill=gender))+
   geom_dotplot()+
-  facet_wrap(group~practiced, nrow=2)
+  facet_wrap(group~gender, nrow=2)
 ```
 
 How is this different?  When would I want this instead?
 ```{r}
-ggplot(data=breath, aes( x=time, fill=group))+
+ggplot(data=breath, aes( x=duration, fill=group))+
   geom_dotplot()+
   facet_wrap(gender~group, nrow=2)
 ```
