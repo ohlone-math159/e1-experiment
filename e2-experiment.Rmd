@@ -1,0 +1,157 @@
+---
+title: "E2 - Experiment -Tuesday's Data"
+author: "Jose Rico"
+date: "9/2/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Packages needed
+```{r message=FALSE}
+library(readr)
+library(tidyverse)
+library(randomizr)
+```
+
+## Load Class Roster to Perform Randomization of Treatment
+```{r}
+roster <-read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSWYF1ho6YTKp7ntHl-9CV6HcgJYYqcT53MZUBBKGByhCxzJmUymJF4GWINHdAPMREUSj6IosD7E4Gc/pub?gid=0&single=true&output=csv")
+```
+
+## Create 2 Groups (Control and Treatment)
+
+```{r}
+N <- nrow(roster)
+roster_ra <- roster %>% 
+  mutate(group = complete_ra(N=N, conditions = c("eyes_closed","eyes_open")))
+```
+
+## Take a look at the data frame with `glimpse`
+```{r}
+glimpse(roster_ra)
+```
+
+##Check out the `summary` command of our data frame
+
+```{r}
+summary(roster_ra)
+```
+ 
+## Compare the new groups for equal proportions of our categorical variables
+
+Example: look at distribution of gender within the groups
+```{r}
+#visual
+ggplot(data = roster_ra, aes(x=group, fill=gender))+
+  geom_bar()
+#numerical (the 1 mean the % is calculated by the row)
+  prop.table(table(roster_ra$group, roster_ra$gender),1)
+```
+
+## Practice visualization for additional categorical variables
+
+Categorical Variable #2
+```{r}
+ggplot(data = roster_ra, aes(x=group, fill=factor(fitness_level)))+
+  geom_bar()
+```
+
+Categorical Variable #3
+```{r}
+
+```
+
+## Compare the groups with respect to the numerical variables
+
+Example: Visualize height
+```{r}
+ggplot(roster_ra, aes(x=age, fill=group))+
+  geom_dotplot()+
+  facet_wrap(~group, nrow=2)
+```
+Example: Look at average height
+```{r}
+roster_ra %>% 
+  group_by(group) %>% 
+  summarise(mean=mean(height))
+```
+
+## Practice - analyze the other numerical variable
+
+Visualize 
+```{r}
+
+```
+Calculate averages 
+```{r}
+
+```
+
+## Analysis of the experimental results
+
+#Load in the data from the survey by publishing Google Sheet
+```{r}
+breath <-read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRXUa2Xo3hx6WnNo0WSu1OK_5oODLIxwooSFzteeVBZGXsRh_9UxqwY0nueUGRJLrza0wJSb6M5ZLcp/pub?gid=0&single=true&output=csv")
+```
+
+# Compare the Treatment to the Control
+Looking at differences in breathing time between control and treatment groups, using dotplot of each group
+
+```{r}
+ggplot(data=breath, aes(x=time, fill=group))+
+  geom_dotplot()+
+  facet_wrap(~group, nrow=2)
+```
+
+Another way to see the difference is to use a boxplot summary graphic
+```{r}
+ggplot(data=breath, aes(x=group, y=time, color=group))+
+  geom_boxplot()+
+  geom_point(position="jitter")+
+  coord_flip()
+```
+
+We can also compare averages time by looking at numerical summary broken down by group
+
+```{r}
+breath %>% 
+  group_by(group) %>% 
+  summarize(mean=mean(time))
+
+```
+
+**Group Discusssion prompt: What do you notice?**
+
+# Looking deeper into the categorical variables for differences within factors
+
+Do we see any difference across categorical variable from control to treatment? 
+
+Example: differences within **gender** across the treatment/control
+
+Numerical Summaries (median and mean)
+```{r}
+breath %>% 
+  group_by(gender, group) %>% 
+  summarize(mean=mean(time))
+```
+
+Visualize the results with a dotplot
+
+```{r}
+ggplot(data=breath, aes( x=time, fill=practiced))+
+  geom_dotplot()+
+  facet_wrap(group~practiced, nrow=2)
+```
+
+How is this different?  When would I want this instead?
+```{r}
+ggplot(data=breath, aes( x=time, fill=group))+
+  geom_dotplot()+
+  facet_wrap(gender~group, nrow=2)
+```
+
+## Additional Practice
+Now let's try to modify the above analysis for other categorical variables.
