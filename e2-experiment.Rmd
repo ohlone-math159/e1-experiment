@@ -18,7 +18,7 @@ library(randomizr)
 
 ## Load Class Roster to Perform Randomization of Treatment
 ```{r message=FALSE}
-roster <-read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vShIAfdrl33WvTe9fFLHZPZH1RSQpaBFc1e_EjlbfOC_-pW3mIb0vm0ugZrlFu4B72XiYBCHYnW33DW/pub?gid=839563195&single=true&output=csv")
+roster <-read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQNx1Ak_WxqqOmEo4qBF4np_6EioapeQjjOw-OVz3OhPPCg2zRcZs3iMObApjAfzzT-ULTwO3kRRAe7/pub?gid=0&single=true&output=csv")
 ```
 
 ## Create 2 Groups (Control and Treatment)
@@ -34,11 +34,26 @@ roster_ra <- roster %>%
 glimpse(roster_ra)
 ```
 
+## Change variable types of `amt_stress` and `fitness_level` from `<int>` to `<fct>`
+```{r}
+roster_ra$amt_stress <- factor(roster_ra$amt_stress)
+roster_ra$fitness_level <- factor(roster_ra$fitness_level)
+```
+
+
 ##Check out the `summary` command of our data frame
 
 ```{r}
 summary(roster_ra)
 ```
+## Advanced Summary broken into groups with `purrr` package
+```{r}
+library(purrr)
+
+roster_ra %>% split(.$group) %>% map(summary)
+```
+
+ 
  
 ## Compare the new groups for equal proportions of our categorical variables
 
@@ -164,3 +179,5 @@ ggplot(data=breath, aes( x=duration, fill=group))+
 
 ## Additional Practice
 Now let's try to modify the above analysis for other categorical variables.
+
+
